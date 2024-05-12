@@ -20,4 +20,18 @@ export class UsersService {
       }
     }
   }
+
+  async delete(id: number): Promise<User> {
+    try {
+      const user = await this.userRepository.findOneById(id);
+      if (!user) {
+        return null;
+      }
+      return await this.userRepository.remove(user);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw err;
+      }
+    }
+  }
 }
