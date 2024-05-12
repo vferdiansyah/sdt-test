@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -12,6 +13,9 @@ async function bootstrap() {
   if (!appConfig) {
     throw new Error('App config is not found.');
   }
+
+  app.useGlobalPipes(new ValidationPipe());
+
   const { env, host, port } = appConfig;
 
   await app.listen(port, () =>
