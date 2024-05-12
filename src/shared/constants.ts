@@ -3,6 +3,8 @@
 export namespace ResponseMessage {
   export const USER = {
     CREATED: 'User has been created',
+    NOT_FOUND: 'User not found',
+    DELETED: 'User has been deleted',
   } as const;
 }
 

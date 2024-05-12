@@ -41,4 +41,18 @@ describe('UserService', () => {
       expect(response).toBeTruthy();
     });
   });
+
+  describe('delete', () => {
+    it('should successfully delete user', async () => {
+      const response = await usersService.delete(1);
+      expect(response).toBeTruthy();
+    });
+
+    it('should return null if no user is found', async () => {
+      jest.spyOn(userRepository, 'findOneById').mockResolvedValueOnce(null);
+
+      const response = await usersService.delete(1);
+      expect(response).toBe(null);
+    });
+  });
 });
