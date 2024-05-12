@@ -8,7 +8,9 @@ export class CreateUsersTable1715359754143 implements MigrationInterface {
         {
           name: 'id',
           type: 'int',
-          generationStrategy: 'increment',
+          isGenerated: true,
+          generationStrategy: 'identity',
+          generatedIdentity: 'ALWAYS',
           isPrimary: true,
         },
         {
@@ -51,6 +53,7 @@ export class CreateUsersTable1715359754143 implements MigrationInterface {
         {
           name: 'deletedAt',
           type: 'timestamp',
+          isNullable: true,
         },
       ],
     });
