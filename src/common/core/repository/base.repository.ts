@@ -75,17 +75,44 @@ export abstract class BaseRepository<T extends ObjectLiteral, QueryParams>
     return await this.repository.find(options);
   }
 
-  async remove(data: T): Promise<T> {
+  async update(id: any, data: Partial<T>): Promise<T> {
     const queryRunner = await this.createQueryRunner();
     await queryRunner.connect();
 
     try {
       if (queryRunner.isTransactionActive) {
-        return await this.repository.remove(data);
+        await this.repository.update(id, data);
+        return await this.repository.findOneBy({ id });
       }
 
       await queryRunner.startTransaction();
-      const result = await this.repository.remove(data);
+      await this.repository.update(id, data);
+      await queryRunner.commitTransaction();
+
+      return await this.repository.findOneBy({ id });
+    } catch (err: unknown) {
+      await queryRunner.rollbackTransaction();
+      if (err instanceof QueryFailedError) {
+        throw new Error(ErrorMessage.DB.FAILED);
+      }
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async delete(data: T): Promise<T> {
+    const queryRunner = await this.createQueryRunner();
+    await queryRunner.connect();
+
+    try {
+      if (queryRunner.isTransactionActive) {
+        (data as any).deletedAt = new Date();
+        return await this.repository.save(data);
+      }
+
+      await queryRunner.startTransaction();
+      (data as any).deletedAt = new Date();
+      const result = await this.repository.save(data);
       await queryRunner.commitTransaction();
 
       return result;

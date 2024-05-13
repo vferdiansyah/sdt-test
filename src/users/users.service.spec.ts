@@ -29,6 +29,7 @@ describe('UserService', () => {
 
   describe('create', () => {
     const user: CreateUserDto = {
+      email: 'john.doe@email.com',
       firstName: 'John',
       lastName: 'Doe',
       dateOfBirth: new Date().toISOString(),
