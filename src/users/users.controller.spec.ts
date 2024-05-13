@@ -31,6 +31,7 @@ describe('UsersController', () => {
 
   describe('create', () => {
     const user: CreateUserDto = {
+      email: 'john.doe@email.com',
       firstName: 'John',
       lastName: 'Doe',
       dateOfBirth: new Date().toISOString(),
@@ -47,7 +48,7 @@ describe('UsersController', () => {
 
   describe('delete', () => {
     it('should successfully delete user', async () => {
-      const response = await usersController.delete(1);
+      const response = await usersController.delete({ id: 1 });
       expect(response.statusCode).toEqual(HttpStatus.OK);
       expect(response.message).toEqual(ResponseMessage.USER.DELETED);
     });
@@ -55,7 +56,7 @@ describe('UsersController', () => {
     it('should return 404 if no user found', async () => {
       jest.spyOn(usersService, 'delete').mockResolvedValueOnce(null);
 
-      const response = await usersController.delete(1);
+      const response = await usersController.delete({ id: 1 });
       expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
       expect(response.message).toEqual(ResponseMessage.USER.NOT_FOUND);
     });

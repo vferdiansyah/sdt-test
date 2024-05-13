@@ -7,5 +7,6 @@ export interface BaseRepositoryInterface<T> {
   findOneById(id: number): Promise<T>;
   findByCondition(filterCondition: FindOneOptions<T>): Promise<T>;
   findAll(options?: FindManyOptions<T>): Promise<T[]>;
-  remove(data: T): Promise<T>;
+  update(id: number, data: Partial<T>): Promise<T>;
+  delete(data: T): Promise<T>;
 }

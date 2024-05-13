@@ -1,8 +1,17 @@
+import { IsDate, IsEmail, IsTimeZone } from 'class-validator';
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../common/core/entity/base.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
+  @Column({
+    type: 'varchar',
+    nullable: false,
+    unique: true,
+  })
+  @IsEmail()
+  email: string;
+
   @Column({
     type: 'varchar',
     nullable: false,
@@ -19,6 +28,7 @@ export class User extends BaseEntity {
     type: 'date',
     nullable: false,
   })
+  @IsDate()
   dateOfBirth: Date;
 
   @Column({
@@ -31,5 +41,6 @@ export class User extends BaseEntity {
     type: 'varchar',
     nullable: false,
   })
+  @IsTimeZone()
   timezone: string;
 }

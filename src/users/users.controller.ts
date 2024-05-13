@@ -2,21 +2,25 @@ import {
   Body,
   Controller,
   Delete,
+  HttpCode,
   HttpException,
   HttpStatus,
-  Param,
-  ParseIntPipe,
   Post,
+  Put,
 } from '@nestjs/common';
+import { Idempotent } from '@node-idempotency/nestjs';
 import { BaseResponse } from '../common/core/response/base.response';
 import { ResponseMessage } from '../shared/constants';
 import { CreateUserDto } from './dto/create-user.dto';
+import { DeleteUserDto } from './dto/delete-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Idempotent()
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<BaseResponse> {
     try {
@@ -29,8 +33,26 @@ export class UsersController {
     }
   }
 
-  @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number): Promise<BaseResponse> {
+  @Idempotent()
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Put()
+  async update(@Body() { id, ...body }: UpdateUserDto): Promise<BaseResponse> {
+    try {
+      await this.usersService.update(id, body);
+      return new BaseResponse(
+        HttpStatus.ACCEPTED,
+        ResponseMessage.USER.UPDATED,
+      );
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
+  @Idempotent()
+  @Delete()
+  async delete(@Body() { id }: DeleteUserDto): Promise<BaseResponse> {
     try {
       const user = await this.usersService.delete(id);
       if (!user) {

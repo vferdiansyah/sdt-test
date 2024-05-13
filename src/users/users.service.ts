@@ -21,13 +21,27 @@ export class UsersService {
     }
   }
 
+  async findOneById(id: number): Promise<User> {
+    return this.userRepository.findOneById(id);
+  }
+
+  async update(id: number, body: Partial<User>): Promise<User> {
+    try {
+      return this.userRepository.update(id, body);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw err;
+      }
+    }
+  }
+
   async delete(id: number): Promise<User> {
     try {
       const user = await this.userRepository.findOneById(id);
       if (!user) {
         return null;
       }
-      return await this.userRepository.remove(user);
+      return await this.userRepository.delete(user);
     } catch (err: unknown) {
       if (err instanceof Error) {
         throw err;
