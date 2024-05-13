@@ -7,6 +7,7 @@ import { BaseResponse } from '../common/core/response/base.response';
 import { EXT_CONFIG_TOKEN, ExtConfig } from '../config';
 import { ResponseMessage } from '../shared/constants';
 import { UsersService } from '../users/users.service';
+import { BirthdayMessage } from './birthday.message';
 import { SendMessageDto } from './dto/send-message.dto';
 
 @Controller('messages')
@@ -30,10 +31,15 @@ export class MessagesController {
       );
     }
 
+    const message = new BirthdayMessage(
+      user.firstName,
+      user.lastName,
+    ).generateMessage();
+
     const response = await firstValueFrom(
       this.httpService.post(`${extConfig.baseApiUrl}/send-email`, {
         email: user.email,
-        message: `Hi, ${user.firstName} ${user.lastName} it's your birthday`,
+        message,
       }),
     );
     return response.data;
