@@ -1,6 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import {
+  NodeIdempotencyModule,
+  StorageAdapterEnum,
+} from '@node-idempotency/nestjs';
 import { MockService } from '../common/mocks/service/service.mock';
+import { SchedulerService } from '../scheduler/scheduler.service';
 import { ResponseMessage } from '../shared/constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersController } from './users.controller';
@@ -12,8 +17,21 @@ describe('UsersController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        NodeIdempotencyModule.forRootAsync({
+          storage: {
+            adapter: StorageAdapterEnum.memory,
+          },
+        }),
+      ],
       controllers: [UsersController],
       providers: [
+        {
+          provide: SchedulerService,
+          useFactory: () => ({
+            addBirthdayCronJob: () => jest.fn(),
+          }),
+        },
         {
           provide: UsersService,
           useClass: MockService,

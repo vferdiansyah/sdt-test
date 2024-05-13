@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { Idempotent } from '@node-idempotency/nestjs';
 import { BaseResponse } from '../common/core/response/base.response';
+import { SchedulerService } from '../scheduler/scheduler.service';
 import { ResponseMessage } from '../shared/constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { DeleteUserDto } from './dto/delete-user.dto';
@@ -18,13 +19,17 @@ import { UsersService } from './users.service';
 
 @Controller('user')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly schedulerService: SchedulerService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Idempotent()
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<BaseResponse> {
     try {
-      await this.usersService.create(createUserDto);
+      const user = await this.usersService.create(createUserDto);
+      this.schedulerService.addBirthdayCronJob(user.id, user.timezone);
       return new BaseResponse(HttpStatus.CREATED, ResponseMessage.USER.CREATED);
     } catch (err: unknown) {
       if (err instanceof Error) {

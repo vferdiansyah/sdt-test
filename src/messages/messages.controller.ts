@@ -33,7 +33,7 @@ export class MessagesController {
     const response = await firstValueFrom(
       this.httpService.post(`${extConfig.baseApiUrl}/send-email`, {
         email: user.email,
-        message: `Hi, ${user.firstName} ${user.lastName} happy birthday`,
+        message: `Hi, ${user.firstName} ${user.lastName} it's your birthday`,
       }),
     );
     return response.data;
